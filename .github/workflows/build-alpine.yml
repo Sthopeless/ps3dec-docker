@@ -1,4 +1,4 @@
-name: Create and publish a Alpine Docker image
+name: Create and publish an Alpine Docker image
 
 on:
   push:
@@ -11,13 +11,13 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -25,8 +25,11 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker buildx build --file Dockerfile.alpine --iidfile /tmp/docker-actions-toolkit-DOBhww/iidfile --label org.opencontainers.image.created=$(date --utc +%Y-%m-%dT%H:%M:%SZ) \
-            --label org.opencontainers.image.description= \
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --file Dockerfile.alpine \
+            --label org.opencontainers.image.created=$(date --utc +%Y-%m-%dT%H:%M:%SZ) \
+            --label org.opencontainers.image.description="PS3DEC Alpine-based Docker image" \
             --label org.opencontainers.image.licenses=MIT \
             --label org.opencontainers.image.revision=${{ github.sha }} \
             --label org.opencontainers.image.source=https://github.com/${{ github.repository }} \
@@ -34,5 +37,5 @@ jobs:
             --label org.opencontainers.image.url=https://github.com/${{ github.repository }} \
             --label org.opencontainers.image.version=${{ github.ref_name }} \
             --tag ghcr.io/sthopeless/ps3dec-docker:alpine \
-            --metadata-file /tmp/docker-actions-toolkit-DOBhww/metadata-file \
+            --tag ghcr.io/sthopeless/ps3dec-docker:latest \
             --push .
