@@ -21,7 +21,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.gtt }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
         run: |
@@ -37,5 +37,4 @@ jobs:
             --label org.opencontainers.image.url=https://github.com/${{ github.repository }} \
             --label org.opencontainers.image.version=${{ github.ref_name }} \
             --tag ghcr.io/sthopeless/ps3dec-docker:alpine \
-            --tag ghcr.io/sthopeless/ps3dec-docker:latest \
             --push .
