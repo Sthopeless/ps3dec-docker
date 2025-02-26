@@ -10,21 +10,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-    - name: Log in to GitHub Container Registry
-      uses: docker/login-action@v2
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v2
-      with:
-        push: true
-        tags: ghcr.io/sthopeless/ps3dec-docker:alpine
+      - name: Build and push Docker image
+        run: |
+          docker buildx build --file Dockerfile.alpine --iidfile /tmp/docker-actions-toolkit-DOBhww/iidfile --label org.opencontainers.image.created=$(date --utc +%Y-%m-%dT%H:%M:%SZ) \
+            --label org.opencontainers.image.description= \
+            --label org.opencontainers.image.licenses=MIT \
+            --label org.opencontainers.image.revision=${{ github.sha }} \
+            --label org.opencontainers.image.source=https://github.com/${{ github.repository }} \
+            --label org.opencontainers.image.title=ps3dec-docker \
+            --label org.opencontainers.image.url=https://github.com/${{ github.repository }} \
+            --label org.opencontainers.image.version=${{ github.ref_name }} \
+            --tag ghcr.io/sthopeless/ps3dec-docker:alpine \
+            --metadata-file /tmp/docker-actions-toolkit-DOBhww/metadata-file \
+            --push .
