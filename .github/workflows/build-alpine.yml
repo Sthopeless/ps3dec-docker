@@ -2,58 +2,38 @@ name: Create and publish a Alpine Docker image
 
 on:
   push:
-    branches: ['main']
-  schedule:
-    - cron: '0 0 * * 0'  # Runs every Sunday at midnight UTC
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+    branches:
+      - main
 
 jobs:
-  build-and-push-image:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set environment variables
-        run: echo "REPO_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.REPO_OWNER }}/${{ env.IMAGE_NAME }}
-
       - name: Build and push Docker image
-        id: push
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: Dockerfile.alpine
-          push: true
-          tags: |
-            ${{ steps.meta.outputs.tags }}
-            ${{ env.REGISTRY }}/${{ env.REPO_OWNER }}/${{ env.IMAGE_NAME }}:alpine
-          labels: ${{ steps.meta.outputs.labels }}
-
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v2
-        with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.REPO_OWNER }}/${{ env.IMAGE_NAME }}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
+        run: |
+          docker buildx build --file Dockerfile.alpine --iidfile /tmp/docker-actions-toolkit-DOBhww/iidfile --label org.opencontainers.image.created=$(date --utc +%Y-%m-%dT%H:%M:%SZ) \
+            --label org.opencontainers.image.description= \
+            --label org.opencontainers.image.licenses=MIT \
+            --label org.opencontainers.image.revision=${{ github.sha }} \
+            --label org.opencontainers.image.source=https://github.com/${{ github.repository }} \
+            --label org.opencontainers.image.title=ps3dec-docker \
+            --label org.opencontainers.image.url=https://github.com/${{ github.repository }} \
+            --label org.opencontainers.image.version=${{ github.ref_name }} \
+            --tag ghcr.io/sthopeless/ps3dec-docker:main \
+            --tag ghcr.io/sthopeless/ps3dec-docker:alpine \
+            --metadata-file /tmp/docker-actions-toolkit-DOBhww/metadata-file \
+            --push .
