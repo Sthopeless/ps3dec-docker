@@ -1,8 +1,10 @@
-name: Create and publish a Docker image
+name: Create and publish a Alpine Docker image
 
 on:
   push:
     branches: ['main']
+  schedule:
+    - cron: '0 0 * * 0'  # Runs every Sunday at midnight UTC
 
 env:
   REGISTRY: ghcr.io
