@@ -60,11 +60,15 @@ if [ "$CONTAINER" == "github" ]; then
     -v "$(pwd):/app" \
     "$githubContainer:$VERSION" \
     $ps3go "$readkey" "$gameTitle" "$folder_out/$gameTitle"
+  rm -rf "$gameTitle"
+  rm -rf "$lekey"
 elif [ "$CONTAINER" == "dockerhub" ]; then
   docker run --rm -it --name ps3dec \
     -v "$(pwd):/app" \
     "$dockerhubContainer:$VERSION" \
     $ps3go "$readkey" "$gameTitle" "$folder_out/$gameTitle"
+  rm -rf "$gameTitle"
+  rm -rf "$lekey"
 else
   echo "Error: Invalid container choice!"
   exit 1
