@@ -22,7 +22,3 @@ RUN mkdir build && cd build \
 
 # Move binary to /usr/local/bin for easy access
 RUN cp /app/build/Release/PS3Dec /usr/local/bin/ps3dec && chmod +x /usr/local/bin/ps3dec
-
-# Copy the decryption script
-COPY ps3decrypt.sh /usr/local/bin/ps3decrypt
-RUN chmod +x /usr/local/bin/ps3decrypt
