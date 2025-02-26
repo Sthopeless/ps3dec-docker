@@ -33,7 +33,6 @@ jobs:
             --label org.opencontainers.image.title=ps3dec-docker \
             --label org.opencontainers.image.url=https://github.com/${{ github.repository }} \
             --label org.opencontainers.image.version=${{ github.ref_name }} \
-            --tag ghcr.io/sthopeless/ps3dec-docker:main \
             --tag ghcr.io/sthopeless/ps3dec-docker:alpine \
             --metadata-file /tmp/docker-actions-toolkit-DOBhww/metadata-file \
             --push .
