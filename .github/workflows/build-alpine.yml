@@ -2,8 +2,9 @@ name: Create and publish an Alpine Docker image
 
 on:
   push:
-    branches:
-      - main
+    branches: ['main']
+  schedule:
+    - cron: '0 0 * * 0'  # Runs every Sunday at midnight UTC
 
 jobs:
   build:
