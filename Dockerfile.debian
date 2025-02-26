@@ -1,0 +1,25 @@
+FROM debian:bookworm-slim
+
+# Install dependencies
+RUN apt update && apt install -y \
+    git cmake ninja-build build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Clone PS3Dec repository
+RUN git clone --recurse-submodules https://github.com/al3xtjames/PS3Dec .
+
+# Create and enter the build directory
+RUN mkdir build && cd build \
+    && if command -v ninja &> /dev/null; then \
+        echo "Using Ninja"; \
+        cmake -G Ninja .. && ninja; \
+    else \
+        echo "Using Make"; \
+        cmake .. && make; \
+    fi
+
+# Move binary to /usr/local/bin for easy access
+RUN cp /app/build/Release/PS3Dec /usr/local/bin/ps3dec && chmod +x /usr/local/bin/ps3dec
