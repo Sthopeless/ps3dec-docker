@@ -59,12 +59,12 @@ if [ "$CONTAINER" == "github" ]; then
   docker run --rm -it --name ps3dec \
     -v "$(pwd):/app" \
     "$githubContainer:$VERSION" \
-    $ps3go "$readkey" "$gameTitle" "$folder_out/$gameTarget"
+    $ps3go "$readkey" "$gameTitle" "$folder_out/$gameTitle"
 elif [ "$CONTAINER" == "dockerhub" ]; then
   docker run --rm -it --name ps3dec \
     -v "$(pwd):/app" \
     "$dockerhubContainer:$VERSION" \
-    $ps3go "$readkey" "$gameTitle" "$folder_out/$gameTarget"
+    $ps3go "$readkey" "$gameTitle" "$folder_out/$gameTitle"
 else
   echo "Error: Invalid container choice!"
   exit 1
