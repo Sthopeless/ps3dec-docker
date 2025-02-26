@@ -34,14 +34,17 @@ jobs:
         username: ${{ github.repository_owner }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Set environment variables
+      run: echo "REPO_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
         context: .
         file: Dockerfile.alpine
         push: true
-        tags: ghcr.io/${{ github.repository_owner | toLowerCase }}/ps3dec:alpine
+        tags: ghcr.io/${{ env.REPO_OWNER }}/ps3dec:alpine
 
     - name: Test Docker image
       run: |
-        docker run --rm ghcr.io/${{ github.repository_owner | toLowerCase }}/ps3dec:alpine ps3dec --version
+        docker run --rm ghcr.io/${{ env.REPO_OWNER }}/ps3dec:alpine ps3dec --version
